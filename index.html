@@ -3,272 +3,277 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>เกม XO สุดโมเดิร์น</title>
+    <title>เกมตอบคำถาม ดนตรีไทยและดนตรีสากล ป.5</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Prompt', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
         body {
-            background: linear-gradient(135deg, #0f172a, #1e1b4b);
-            color: #ffffff;
-            min-height: 100vh;
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            margin: 0;
+            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            overflow: hidden;
         }
-
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            background: linear-gradient(45deg, #38bdf8, #ec4899);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .status-container {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 10px 25px;
-            border-radius: 50px;
-            margin-bottom: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-        }
-
-        #status {
-            font-size: 1.2rem;
-            font-weight: 500;
-            letter-spacing: 1px;
-        }
-
-        .board {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            background: rgba(255, 255, 255, 0.03);
-            padding: 15px;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-            margin-bottom: 25px;
-        }
-
-        .cell {
-            width: 100px;
-            height: 100px;
-            background: rgba(255, 255, 255, 0.05);
-            border: none;
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: white;
+            padding: 30px;
             border-radius: 15px;
-            font-size: 2.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+        .question-box {
+            font-size: 1.4rem;
             font-weight: bold;
+            margin-bottom: 25px;
+            padding: 15px;
+            background-color: #e8f4fd;
+            border-radius: 8px;
+            color: #2980b9;
+        }
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .option-btn {
+            padding: 15px;
+            font-size: 1.1rem;
+            border: 2px solid #bdc3c7;
+            border-radius: 8px;
+            background: white;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s;
+        }
+        .option-btn:hover {
+            background-color: #f8f9fa;
+            border-color: #3498db;
+        }
+        .correct {
+            background-color: #2ecc71 !important;
+            color: white !important;
+            border-color: #27ae60 !important;
+        }
+        .incorrect {
+            background-color: #e74c3c !important;
+            color: white !important;
+            border-color: #c0392b !important;
+        }
+        .controls {
+            margin-top: 20px;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
         }
-
-        .cell:hover {
-            background: rgba(255, 255, 255, 0.12);
-            transform: translateY(-2px);
-        }
-
-        .cell:active {
-            transform: translateY(1px);
-        }
-
-        /* ตกแต่งตัว X */
-        .cell.x {
-            color: #38bdf8;
-            text-shadow: 0 0 15px rgba(56, 189, 248, 0.8);
-            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        /* ตกแต่งตัว O */
-        .cell.o {
-            color: #ec4899;
-            text-shadow: 0 0 15px rgba(236, 72, 153, 0.8);
-            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        /* ไฮไลท์ช่องที่ชนะ */
-        .cell.winner {
-            background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(236, 72, 153, 0.2));
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
-            animation: pulse 1.5s infinite;
-        }
-
-        .reset-btn {
-            padding: 12px 35px;
+        .btn {
+            padding: 10px 25px;
             font-size: 1rem;
-            font-weight: 600;
-            color: white;
-            background: linear-gradient(45deg, #0284c7, #db2777);
             border: none;
-            border-radius: 50px;
+            border-radius: 5px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(219, 39, 119, 0.4);
+            color: white;
         }
-
-        .reset-btn:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(219, 39, 119, 0.6);
+        .btn-blue { background-color: #3498db; }
+        .btn-green { background-color: #2ecc71; }
+        .btn:disabled { background-color: #bdc3c7; cursor: not-allowed; }
+        .status {
+            font-size: 1.1rem;
+            font-weight: bold;
         }
-
-        .reset-btn:active {
-            transform: translateY(1px);
+        .score-board {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+            text-align: left;
         }
-
-        @keyframes popIn {
-            0% { transform: scale(0); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
+        .player-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
         }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.03); }
+        .player-card {
+            background: #f8f9fa;
+            padding: 8px;
+            border-radius: 5px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+            font-size: 0.9rem;
         }
-
-        @media (max-width: 400px) {
-            .cell {
-                width: 85px;
-                height: 85px;
-                font-size: 2.2rem;
-            }
-            h1 { font-size: 2rem; }
+        .player-card input {
+            width: 40px;
+            text-align: center;
+            margin-top: 5px;
         }
     </style>
-    <link href="https://googleapis.com" rel="stylesheet">
 </head>
 <body>
 
-    <h1>Tic Tac Toe</h1>
+<div class="container">
+    <h1>เกมตอบคำถาม ดนตรีไทย & ดนตรีสากล</h1>
+    <div class="subtitle">ระดับชั้นประถมศึกษาปีที่ 5 (ผู้เล่น 27 คน)</div>
 
-    <div class="status-container">
-        <div id="status">ตาของคนเล่น: X</div>
+    <div id="quiz-section">
+        <div class="status" id="progress">คำถามที่ 1/10</div>
+        <div class="question-box" id="question">ข้อความคำถามจะแสดงที่นี่</div>
+        
+        <div class="options-grid">
+            <button class="option-btn" onclick="checkAnswer(0)" id="opt0">ตัวเลือกที่ 1</button>
+            <button class="option-btn" onclick="checkAnswer(1)" id="opt1">ตัวเลือกที่ 2</button>
+            <button class="option-btn" onclick="checkAnswer(2)" id="opt2">ตัวเลือกที่ 3</button>
+            <button class="option-btn" onclick="checkAnswer(3)" id="opt3">ตัวเลือกที่ 4</button>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-green" id="reveal-btn" onclick="revealAnswer()">ดูเฉลย</button>
+            <button class="btn btn-blue" id="next-btn" onclick="nextQuestion()" disabled>ข้อถัดไป</button>
+        </div>
     </div>
 
-    <div class="board" id="board">
-        <button class="cell" data-cell-index="0"></button>
-        <button class="cell" data-cell-index="1"></button>
-        <button class="cell" data-cell-index="2"></button>
-        <button class="cell" data-cell-index="3"></button>
-        <button class="cell" data-cell-index="4"></button>
-        <button class="cell" data-cell-index="5"></button>
-        <button class="cell" data-cell-index="6"></button>
-        <button class="cell" data-cell-index="7"></button>
-        <button class="cell" data-cell-index="8"></button>
+    <!-- บอร์ดคะแนนสำหรับนักเรียน 27 คนให้คุณครูกดบวกคะแนนได้สดๆ -->
+    <div class="score-board">
+        <h3>กระดานคะแนนนักเรียน (27 คน)</h3>
+        <p style="font-size: 0.85rem; color: #7f8c8d;">*คุณครูสามารถกดเครื่องหมาย + เพื่อเพิ่มคะแนนให้เด็กที่ตอบถูกในแต่ละข้อได้ทันที</p>
+        <div class="player-grid" id="player-grid">
+            <!-- โค้ดส่วนนี้จะสร้างการ์ดผู้เล่น 27 คนอัตโนมัติจาก JavaScript -->
+        </div>
     </div>
+</div>
 
-    <button class="reset-btn" id="resetBtn">เริ่มเกมใหม่</button>
-
-    <script>
-        const board = document.getElementById('board');
-        const cells = document.querySelectorAll('.cell');
-        const statusText = document.getElementById('status');
-        const resetBtn = document.getElementById('resetBtn');
-
-        let currentPlayer = 'X';
-        let gameState = ["", "", "", "", "", "", "", "", ""];
-        let isGameActive = true;
-
-        const winningConditions = [, [3, 4, 5], [6, 7, 8], // แนวนอน, [1, 4, 7], [2, 5, 8], // แนวตั้ง, [2, 4, 6]             // แนวทะแยง
-        ];
-
-        function handleCellClick(e) {
-            const clickedCell = e.target;
-            const clickedCellIndex = parseInt(clickedCell.getAttribute('data-cell-index'));
-
-            if (gameState[clickedCellIndex] !== "" || !isGameActive) {
-                return;
-            }
-
-            updateCell(clickedCell, clickedCellIndex);
-            checkResult();
+<script>
+    // ชุดคำถามดนตรี ป.5 จำนวน 10 ข้อ
+    const quizData = [
+        {
+            question: "1. เครื่องดนตรีไทยประเภท 'ดีด' ในข้อใดใช้สายทำมาจากไหมหรือลวด?",
+            options: ["ก. ซอด้วง", "ข. จะเข้", "ค. ขลุ่ยเพียงออ", "ง. ระนาดเอก"],
+            correct: 1
+        },
+        {
+            question: "2. วงดนตรีไทยประเภทใดที่นิยมใช้บรรเลงในงานศพ?",
+            options: ["ก. วงปี่พาทย์นางหงส์", "ข. วงเครื่องสาย", "ค. วงมโหรี", "ง. วงปี่พาทย์เสภา"],
+            correct: 0
+        },
+        {
+            question: "3. ข้อใดจัดเป็นเครื่องดนตรีประเภท 'ดำเนินทำนอง' ของดนตรีไทย?",
+            options: ["ก. ฉิ่ง", "ข. กลองทัด", "ค. ระนาดเอก", "ง. ตะโพน"],
+            correct: 2
+        },
+        {
+            question: "4. เครื่องดนตรีสากลในข้อใดจัดอยู่ในประเภทเครื่องสาย (String Instruments)?",
+            options: ["ก. ฟลูต (Flute)", "ข. ไวโอลิน (Violin)", "ค. ทรัมเป็ต (Trumpet)", "ง. กลองสแนร์ (Snare Drum)"],
+            correct: 1
+        },
+        {
+            question: "5. เครื่องเป่าลมทองเหลือง (Brass Instruments) ชนิดใดมีเสียงต่ำที่สุด?",
+            options: ["ก. ทรัมเป็ต (Trumpet)", "ข. ทรอมโบน (Trombone)", "ค. ทูบา (Tuba)", "ง. เฟรนช์ฮอร์น (French Horn)"],
+            correct: 2
+        },
+        {
+            question: "6. เครื่องดนตรีชนิดใดทำหน้าที่ให้จังหวะในวงดนตรีสากล?",
+            options: ["ก. แซกโซโฟน", "ข. คลาริเน็ต", "ค. กลองชุด", "ง. เปียโน"],
+            correct: 2
+        },
+        {
+            question: "7. เพลงไทยเดิมประเภทใดที่มีความยาวและมีอัตราจังหวะ 3 ชั้น?",
+            options: ["ก. เพลงอัตราจังหวะช้า", "ข. เพลงอัตราจังหวะปานกลาง", "ค. เพลงอัตราจังหวะเร็ว", "ง. เพลงหน้าพาทย์"],
+            correct: 0
+        },
+        {
+            question: "8. ตัวโน้ตสากลในข้อใดมีอัตราความยาวของเสียงมากที่สุด?",
+            options: ["ก. โน้ตตัวกลม", "ข. โน้ตตัวขาว", "ค. โน้ตตัวดำ", "ง. โน้ตตัวเขบ็จ 1 ชั้น"],
+            correct: 0
+        },
+        {
+            question: "9. วงออร์เคสตรา (Orchestra) ประกอบด้วยเครื่องดนตรีประเภทใดเป็นหลัก?",
+            options: ["ก. เครื่องสาย", "ข. เครื่องเป่าลมไม้", "ค. เครื่องเป่าลมทองเหลือง", "ง. เครื่องกระทบ"],
+            correct: 0
+        },
+        {
+            question: "10. เครื่องดนตรีไทยในข้อใดที่ได้รับอิทธิพลมาจากต่างประเทศ?",
+            options: ["ก. กลองยาว", "ข. ขิม", "ค. ซอสามสาย", "ง. ปี่ใน"],
+            correct: 1
         }
+    ];
 
-        function updateCell(cell, index) {
-            gameState[index] = currentPlayer;
-            cell.textContent = currentPlayer;
-            cell.classList.add(currentPlayer.toLowerCase());
+    let currentQuestion = 0;
+    let answered = false;
+
+    // สร้างกระดานคะแนนสำหรับผู้เล่น 27 คน
+    const playerGrid = document.getElementById('player-grid');
+    for (let i = 1; i <= 27; i++) {
+        const card = document.createElement('div');
+        card.className = 'player-card';
+        card.innerHTML = `
+            <div>คนที่ ${i}</div>
+            <span id="score-${i}" style="font-weight:bold; color:#27ae60;">0</span> คะแนน<br>
+            <button onclick="addPoint(${i})" style="margin-top:5px; cursor:pointer;">+</button>
+        `;
+        playerGrid.appendChild(card);
+    }
+
+    // ฟังก์ชันเพิ่มคะแนนนักเรียน
+    function addPoint(id) {
+        const scoreSpan = document.getElementById(`score-${id}`);
+        let currentScore = parseInt(scoreSpan.innerText);
+        scoreSpan.innerText = currentScore + 1;
+    }
+
+    // ฟังก์ชันแสดงคำถาม
+    function loadQuestion() {
+        answered = false;
+        document.getElementById('next-btn').disabled = true;
+        document.getElementById('reveal-btn').disabled = false;
+        
+        const q = quizData[currentQuestion];
+        document.getElementById('progress').innerText = `คำถามที่ ${currentQuestion + 1}/${quizData.length}`;
+        document.getElementById('question').innerText = q.question;
+        
+        for (let i = 0; i < 4; i++) {
+            const btn = document.getElementById(`opt${i}`);
+            btn.innerText = q.options[i];
+            btn.className = 'option-btn'; // รีเซ็ตสี
         }
+    }
 
-        function changePlayer() {
-            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-            statusText.textContent = `ตาของคนเล่น: ${currentPlayer}`;
+    // ฟังก์ชันเมื่อกดเลือกคำตอบ (สำหรับใช้เล่นทีละคน หรือครูคลิกตามเสียงโหวต)
+    function checkAnswer(selectedIndex) {
+        if (answered) return;
+        answered = true;
+        
+        const correctIndex = quizData[currentQuestion].correct;
+        
+        if (selectedIndex === correctIndex) {
+            document.getElementById(`opt${selectedIndex}`).classList.add('correct');
+        } else {
+            document.getElementById(`opt${selectedIndex}`).classList.add('incorrect');
+            document.getElementById(`opt${correctIndex}`).classList.add('correct');
         }
+        
+        document.getElementById('next-btn').disabled = false;
+    }
 
-        function checkResult() {
-            let roundWon = false;
-            let winningLine = [];
+    // ฟังก์ชันกดดูเฉลยทันที (กรณีให้นักเรียนเขียนคำตอบลงกระดาษแล้วครูเฉลยพร้อมกันหน้าห้อง)
+    function revealAnswer() {
+        if (answered) return;
+        answered = true;
+        const correctIndex = quizData[currentQuestion].correct;
+        document.getElementById(`opt${correctIndex}`).classList.add('correct');
+        document.getElementById('next-btn').disabled = false;
+        document.getElementById('reveal-btn').disabled = true;
+    }
 
-            for (let i = 0; i < winningConditions.length; i++) {
-                const winCondition = winningConditions[i];
-                let a = gameState[winCondition[0]];
-                let b = gameState[winCondition[1]];
-                let c = gameState[winCondition[2]];
-
-                if (a === '' || b === '' || c === '') {
-                    continue;
-                }
-                if (a === b && b === c) {
-                    roundWon = true;
-                    winningLine = winCondition;
-                    break;
-                }
-            }
-
-            if (roundWon) {
-                statusText.textContent = `ผู้ชนะคือ: ${currentPlayer}! 🎉`;
-                statusText.style.color = currentPlayer === 'X' ? '#38bdf8' : '#ec4899';
-                isGameActive = false;
-                highlightWinner(winningLine);
-                return;
-            }
-
-            let roundDraw = !gameState.includes("");
-            if (roundDraw) {
-                statusText.textContent = `เสมอจ้า! 🤝`;
-                statusText.style.color = '#ffffff';
-                isGameActive = false;
-                return;
-            }
-
-            changePlayer();
-        }
-
-        function highlightWinner(line) {
-            line.forEach(index => {
-                cells[index].classList.add('winner');
-            });
-        }
-
-        function restartGame() {
-            currentPlayer = 'X';
-            gameState = ["", "", "", "", "", "", "", "", ""];
-            isGameActive = true;
-            statusText.textContent = `ตาของคนเล่น: ${currentPlayer}`;
-            statusText.style.color = '#ffffff';
-            
-            cells.forEach(cell => {
-                cell.textContent = "";
-                cell.className = 'cell'; // รีเซ็ตคลาสกลับไปเป็นค่าเริ่มต้น
-            });
-        }
-
-        cells.forEach(cell => cell.addEventListener('click', handleCellClick));
-        resetBtn.addEventListener('click', restartGame);
-    </script>
-</body>
-</html>
+    // ฟังก์ชันไปข้อถัดไป
+    function nextQuestion() {
+        if (currentQuestion < quizData.length - 1) {
